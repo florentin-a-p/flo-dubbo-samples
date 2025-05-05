@@ -29,22 +29,26 @@ public class InfiniteLoopingApplication {
     public static void main(String[] args) throws IOException {
         ReferenceConfig<GreetingsService> reference = new ReferenceConfig<>();
         reference.setInterface(GreetingsService.class);
-        reference.setUrl("tri://localhost:50052");
+        //reference.setUrl("tri://localhost:50052");
+        reference.setTag("flo-ori-tag");
 
         DubboBootstrap.getInstance()
                 .application("first-dubbo-consumer")
+                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
                 .reference(reference)
                 .start();
 
         GreetingsService service = reference.get();
-        while (true) {
+        int n = 0;
+        while (n < 10) {
             try {
                 String message = service.sayHi("dubbo");
-                System.out.println(new Date() + " Receive result ======> " + message);
+                System.out.println(new Date() + "n is: " + n + " Receive result ======> " + message);
                 Thread.sleep(1000);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+            n = n + 1;
         }
     }
 

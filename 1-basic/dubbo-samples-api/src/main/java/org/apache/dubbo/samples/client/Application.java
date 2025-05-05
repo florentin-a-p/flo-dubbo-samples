@@ -20,6 +20,7 @@ package org.apache.dubbo.samples.client;
 import java.io.IOException;
 
 import org.apache.dubbo.config.ReferenceConfig;
+import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.bootstrap.DubboBootstrap;
 import org.apache.dubbo.config.bootstrap.builders.ApplicationBuilder;
 import org.apache.dubbo.config.bootstrap.builders.ReferenceBuilder;
@@ -30,11 +31,18 @@ public class Application {
         ReferenceConfig<GreetingsService> reference =
                 ReferenceBuilder.<GreetingsService>newBuilder()
                 .interfaceClass(GreetingsService.class)
-                .url("tri://localhost:50052")
+                //.url("tri://localhost:50052")
+                //.group("dummy-asdfasdfsadf")
+                //.tag("flo-dummy-tag")
+                .tag("flo-ori-tag")
                 .build();
 
         DubboBootstrap.getInstance()
-                .application(ApplicationBuilder.newBuilder().qosPort(22223).build())
+                .application(ApplicationBuilder.newBuilder()
+                        .name("dubbo-client-awesomeeee")
+                        .qosPort(22223)
+                        .build())
+                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
                 .reference(reference).start();
         GreetingsService service = reference.get();
 

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+spec:
+  selector:
+    app: zookeeper
+  ports:
+    - name: client
+      port: 2181
+      targetPort: 2181
+    - name: ui
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.9.3      # or “zookeeper:3.8” / “zookeeper:latest”
+          ports:
+            - containerPort: 2181
+              name: client
+            - name: ui
+              containerPort: 8080
+          # ZooKeeper’s default container image will start in standalone mode
+          # and use /data for its dataDir. This is ephemeral storage.
+          volumeMounts:
+            - name: datadir
+              mountPath: /data
+      volumes:
+        - name: datadir
+          emptyDir: {}
