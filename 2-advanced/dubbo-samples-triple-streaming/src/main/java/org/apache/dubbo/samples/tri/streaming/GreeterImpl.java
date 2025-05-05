@@ -34,7 +34,9 @@ public class GreeterImpl extends DubboGreeterTriple.GreeterImplBase {
         return new StreamObserver<GreeterRequest>() {
             @Override
             public void onNext(GreeterRequest data) {
-                GreeterReply resp = GreeterReply.newBuilder().setMessage("reply from biStream " + data.getName()).build();
+                GreeterReply resp = GreeterReply.newBuilder()
+                        .setMessage("reply from biStream " + data.getName()).build();
+                System.out.println("[FLO] message from bistream: " + resp);
                 responseObserver.onNext(resp);
             }
 
@@ -45,7 +47,8 @@ public class GreeterImpl extends DubboGreeterTriple.GreeterImplBase {
 
             @Override
             public void onCompleted() {
-
+                System.out.println("[FLO] bistream awesome completed!!!");
+                //responseObserver.onCompleted();
             }
         };
     }
@@ -54,9 +57,12 @@ public class GreeterImpl extends DubboGreeterTriple.GreeterImplBase {
     public void serverStream(GreeterRequest request, StreamObserver<GreeterReply> responseObserver) {
         LOGGER.info("receive request: {}", request.getName());
         for (int i = 0; i < 10; i++) {
-            GreeterReply reply = GreeterReply.newBuilder().setMessage("reply from serverStream. " + i).build();
+            GreeterReply reply = GreeterReply.newBuilder()
+                    .setMessage("reply from serverStream. " + i)
+                    .build();
             responseObserver.onNext(reply);
         }
-        responseObserver.onCompleted();
+        System.out.println("[FLO] server stream coollio completed!!!");
+        //responseObserver.onCompleted();
     }
 }

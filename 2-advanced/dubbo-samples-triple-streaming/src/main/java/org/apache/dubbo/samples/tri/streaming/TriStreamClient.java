@@ -42,27 +42,39 @@ public class TriStreamClient {
 
         ApplicationConfig applicationConfig = new ApplicationConfig("tri-stub-consumer");
         applicationConfig.setQosEnable(false);
-        bootstrap.application(applicationConfig).reference(ref).registry(new RegistryConfig(TriSampleConstants.ZK_ADDRESS)).start();
+        bootstrap
+                .application(applicationConfig)
+                .reference(ref)
+                .registry(new RegistryConfig(TriSampleConstants.ZK_ADDRESS))
+                .start();
         Greeter greeter = ref.get();
 
         //bi stream
         biStream(greeter);
 
-        //server stream
-        serverStream(greeter);
+        ////server stream
+        //serverStream(greeter);
+
+        System.out.println("[FLO] all streams finished");
     }
 
     private static void biStream(Greeter greeter) {
+        System.out.println("[FLO] bistream started");
         StreamObserver<GreeterRequest> requestStreamObserver = greeter.biStream(new SampleStreamObserver());
         for (int i = 0; i < 10; i++) {
-            GreeterRequest request = GreeterRequest.newBuilder().setName("name-" + i).build();
+            GreeterRequest request = GreeterRequest.newBuilder()
+                    .setName("name-" + i)
+                    .build();
             requestStreamObserver.onNext(request);
         }
         requestStreamObserver.onCompleted();
     }
 
     private static void serverStream(Greeter greeter) {
-        GreeterRequest request = GreeterRequest.newBuilder().setName("server stream request.").build();
+        System.out.println("[FLO] server stream started");
+        GreeterRequest request = GreeterRequest.newBuilder()
+                .setName("server stream request.")
+                .build();
         greeter.serverStream(request, new SampleStreamObserver());
     }
 
@@ -70,17 +82,20 @@ public class TriStreamClient {
 
         @Override
         public void onNext(GreeterReply data) {
+            System.out.println("[FLO] stream <- reply: " + data);
             LOGGER.info("stream <- reply:{}", data);
         }
 
         @Override
         public void onError(Throwable throwable) {
+            System.out.println("[FLO] stream onError" + throwable);
             LOGGER.error("stream onError", throwable);
             throwable.printStackTrace();
         }
 
         @Override
         public void onCompleted() {
+            System.out.println("[FLO] stream completed");
             LOGGER.info("stream completed");
         }
     }

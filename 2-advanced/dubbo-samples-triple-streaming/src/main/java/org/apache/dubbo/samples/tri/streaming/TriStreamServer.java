@@ -42,5 +42,6 @@ public class TriStreamServer {
                 .service(service)
                 .start();
         System.out.println("Dubbo triple streaming server started, port=" + TriSampleConstants.SERVER_PORT);
+        System.in.read();
     }
 }
